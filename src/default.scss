@@ -1,0 +1,362 @@
+
+/*
+Colors Variables */
+
+$white: #fff;
+$cardHeaderColor: #56CCF2;
+$grassColor: #a8e063;
+$sunColor: #f7b733;
+$eveSkyColor: #f46b45;
+
+/*
+Width and Height of a card */
+
+$cardWidth: 300px;
+$cardHeight: 400px;
+
+/*
+Fonts map */
+
+$fonts : (
+   one : "'Open Sans Condensed', sans-serif", 
+   two : "'Nunito Sans', sans-serif"
+);
+
+
+/*
+Mixins for BEM,
+Element width and height,
+and flexBox*/
+
+@mixin makeBEM($pEl,$cEl){
+  &-#{$pEl}__#{$cEl}{
+    @content;
+  }
+}
+
+@mixin WH($w,$h){
+  width:$w;
+  height:$h;
+}
+
+@mixin flexy($direction:row){
+  display:flex;
+  flex-wrap:nowrap;
+  flex-direction:$direction;
+}
+
+/*
+Card base Styles */
+
+body{
+  font-family: unquote(map-get($fonts,one));
+  background: $white;
+}
+
+label{
+  text-align:center;
+  display:block;
+  background:darken($sunColor,10%);
+  color:$white;
+  padding:15px;
+  font-family:unquote(map-get($fonts,two));
+  cursor:pointer;
+  &:hover{
+    opacity:0.7;
+  }
+  &:last-child{
+    background:$cardHeaderColor;
+  }
+}
+
+// checkbox checked transitions
+.input{
+  display:none;
+  
+  &:checked{
+    
+    ~ label{
+        display:none;
+    }
+    
+    ~ .show{
+      display:block;
+    }
+    
+     ~ .weather{
+        @include makeBEM(card,header){
+            animation: daytonight 4s cubic-bezier(0.09, 0.76, 0.63, 1.6) forwards; 
+            .weather-card__clear {
+                .sun{
+                   animation: suntomoon 3s linear forwards;
+                }
+                .stars{
+                  span{
+                    animation: stars 10s ease-in 4s infinite;
+                  }
+                }
+                .grassland{
+                   animation: darkGrass 1s linear 2s forwards;
+                }
+            }
+        }
+   }
+    
+ }
+  
+}
+
+/*
+Weather Card Styles*/
+
+.weather{
+     
+  &-card{
+    @include WH($cardWidth,$cardHeight);
+    background: $white;
+    margin: 100px auto 25px;
+    overflow:hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  }
+  
+  @include makeBEM(card,header){
+      position:relative;
+      @include WH($cardWidth,$cardHeight/2+100px);
+      background:$cardHeaderColor; 
+      animation: nighttoday 10s cubic-bezier(0.09, 0.76, 0.63, 1.6) forwards;
+      // animation: daytonight 5s cubic-bezier(0.09, 0.76, 0.63, 1.6) forwards;
+      span{
+        color:$white;
+        display:inline-block;
+        margin:25px 15px 0;
+        font-size:22px;
+        letter-spacing:1px;
+      }
+      
+     .temperature,
+     .status{
+        display:block;
+        font-size:35px;
+        font-weight:800;
+        margin-top:0;
+     }
+    
+    .status{
+      font-size:20px;
+      font-weight:400;
+    }
+    
+  }
+  
+  @include makeBEM(card,detail){
+    @include WH($cardWidth,auto);
+    background:$white;
+    box-sizing:border-box;
+    padding:5px;
+    
+    .forecast{
+      margin:10px 5px; 
+      padding:10px;
+      @include flexy();
+      border-bottom:1px solid darken($white,5%);
+      transition:300ms ease-in;
+      
+      span{
+        flex:1;  
+        font-family: unquote(map-get($fonts,two));
+        &:nth-child(2){
+          text-align:center;
+        } 
+        &:nth-child(3){
+          text-align:right;
+        } 
+      }
+      
+      &:hover{
+         transform:translateX(5px);
+      }
+      
+    }
+    
+  }
+  
+}
+
+// Styling of grassland ,sky and sun|moon 
+
+.weather{
+  @include makeBEM(card,clear){
+        position:absolute;
+        width:100%;
+        height:100%;
+        top:0;
+        overflow:hidden;
+    
+      .grassland{
+          position:absolute;
+          @include WH($cardWidth*2,$cardHeight/5);
+          background:$grassColor;
+          bottom:0;
+          transform:skew(-72deg);
+          border-top-left-radius:100px;
+          border:2px solid transparent;
+          border-top-color:darken($grassColor,25%);
+          border-bottom:none;
+          z-index:999;
+          &:last-child{
+            bottom:40px;
+            left: -$cardWidth;
+            border-top-right-radius:100px;
+            transform:skew(72deg);
+            z-index:998;
+         }
+         animation: lightGrass 500ms linear forwards;
+        // animation: darkGrass 1s linear 2s forwards;
+      
+    }
+    
+      .sun{
+        position:absolute;
+        width:100px;
+        height:100px;
+        border-radius:50%;
+        right:25px;
+        top:25px;
+        z-index:99;
+        background:lighten($sunColor,5%);
+        box-shadow: 
+               0 0 25px 10px lighten($sunColor,5%),
+               inset 5px -45px 100px -20px $sunColor,
+               inset 5px -45px 40px -20px rgba(0,0,0,0.2);
+        animation: moontosun 500ms linear forwards;
+      }
+    
+      .stars{
+        position:absolute;
+        width:100%;
+        height:100%;
+        span:nth-child(3n + 3){
+            width:2px;
+            height:2px;
+            background:$white;
+            opacity:0;
+        }
+      }
+    
+    }
+  
+}
+
+// Animation for day to night
+@keyframes darkGrass{
+  0%{
+    background:$grassColor;
+  }
+  50%{
+    background:darken($grassColor,25%);
+  }
+  100%{
+    background:darken($grassColor,35%);
+    box-shadow: inset 0 2px 25px 10px rgba($white,0.5);
+  }
+}
+
+@keyframes lightGrass{
+  from{
+     background:darken($grassColor,35%);
+     box-shadow: inset 0 2px 25px 10px rgba($white,0.5);
+  }
+  to{
+     background:$grassColor;
+  }
+}
+
+// Animation for stars
+@keyframes stars{
+  from{
+    transform:translateY(20px);
+    opacity:1;
+  }
+  to{
+    transform:translateY(100px);
+    opacity:0.7;
+  }
+}
+
+// Animation for grassland
+@keyframes daytonight{
+  0%{
+    background:$cardHeaderColor;
+  }
+  50%{
+    background:$eveSkyColor;
+  }
+  100%{
+    background:darken($sunColor,100%);
+  }
+}
+
+@keyframes nighttoday{
+ from{
+    background:darken($sunColor,100%);
+  }
+  to{
+     background:$cardHeaderColor;
+  }
+}
+
+
+//Animation for sun to moon
+
+@keyframes moontosun{
+  0%{
+    transform:translateY(25px);
+    opacity:0
+  }
+  25%{
+    transform:translateY(100px);
+  }
+  50%{
+    transform:translateY(250px);
+  }
+  75%{
+    transform:translateY(100px);
+    background:lighten($sunColor,5%);
+    box-shadow: 
+               0 0 25px 10px lighten($sunColor,5%),
+               inset 5px -45px 100px -20px $sunColor,
+               inset 5px -45px 40px -20px rgba(0,0,0,0.2);
+  }
+  100%{
+    transform:translateY(25px);
+    background:lighten($sunColor,5%);
+    box-shadow: 
+               0 0 25px 10px lighten($sunColor,5%),
+               inset 5px -45px 100px -20px $sunColor,
+               inset 5px -45px 40px -20px rgba(0,0,0,0.2);
+  }
+}
+
+@keyframes suntomoon{
+  0%{
+    transform:translateY(25px);
+  }
+  25%{
+    transform:translateY(100px);
+    background: $eveSkyColor;
+  }
+  50%{
+    transform:translateY(250px);
+  }
+  75%{
+    transform:translateY(100px);
+    background:$white;
+    box-shadow: 0 0 20px $white;
+  }
+  100%{
+    transform:translateY(25px);
+    background:$white;
+    box-shadow: 0 0 25px $white;
+  }
+}
+

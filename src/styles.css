@@ -1,0 +1,12 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+.bgall {
+  width: 100vw;
+
+  height: 100vh;
+  background: url("https://images.pexels.com/photos/531756/pexels-photo-531756.jpeg?auto=compress&cs=tinysrgb&w=600")
+    no-repeat;
+  background-size: cover;
+}
